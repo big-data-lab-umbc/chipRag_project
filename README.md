@@ -184,15 +184,10 @@ These results highlight the importance of knowledge-source selection and domain-
 
 ## Reproducibility
 
-The experimental implementation consists of eight model-configuration scripts, corresponding to the two LLMs and four retrieval conditions.
-
-To reproduce the experiments, check "REPRODUCIBILITY.md", additoionally researchers need access to:
-
-- The corresponding model weights and the Python dependencies used by the implementation find in "REPRODUCIBILITY.md".
-- The benchmark support questions check in "Conversation 25.docx.
-- Authorized institutional knowledge sources or appropriately prepared substitutes **.
-- The experiment scripts and retrieval configuration "code" directory.
-- The evaluation and statistical-analysis procedures check "Postprocessing results".
+The experimental implementation consists of eight model-configuration scripts, corresponding to the two LLMs and four retrieval conditions. For the experimental environment, dependencies, GPU allocation, and execution instructions, see the [Reproducibility Guide](REPRODUCIBILITY.md).
+- [Experiment Scripts](code/)
+- [Statistical Results](Postprocessing%20results/)
+- [25 Benchmark Questions](Conversation%2025.docx)
 
 **Repository status:** Experimental scripts, dependency specifications, and approved reproducibility artifacts will be documented as they become available. This README does not imply that restricted institutional datasets are publicly available.
 
