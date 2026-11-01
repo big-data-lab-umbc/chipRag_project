@@ -9,12 +9,11 @@ from transformers import AutoTokenizer, AutoModelForCausalLM
 from sentence_transformers import SentenceTransformer
 
 # Configuration
-# ============================================================
 
 MODEL_NAME = "mistralai/Mistral-7B-Instruct-v0.3"
 
 RT_CSV_PATH = (
-    "/umbc/rs/pi_jianwu/users/tartelt1/CHIPRAG/"
+#    "/choose user appropriate path/"
     "allDoitTickets_CLEANED.csv"
 )
 
@@ -28,7 +27,6 @@ MAX_NEW_TOKENS = 768
 LOG_PATH = "V1_rt_mistral.txt"
 
 # GPU check
-# ============================================================
 
 print("CUDA available:", torch.cuda.is_available())
 
@@ -37,9 +35,7 @@ if torch.cuda.is_available():
 else:
     print("No GPU found. Model will run on CPU.")
 
-# ============================================================
 # Load Mistral model
-# ============================================================
 
 tokenizer = AutoTokenizer.from_pretrained(
     MODEL_NAME,
@@ -58,9 +54,7 @@ model.eval()
 print("Loaded model:", MODEL_NAME)
 print("Model config:", model.config._name_or_path)
 
-# ============================================================
 # System prompt
-# ============================================================
 SYSTEM = """You are a support assistant for the UMBC chip HPC cluster.
 Use only the retrieved institutional evidence for site-specific facts.
 Do not invent commands, paths, partitions, accounts, policies, or system details.
@@ -70,11 +64,7 @@ Provide a detailed answer with at least 5 numbered steps.
 Explain each step clearly in 2-3 sentences.
 Always complete your response fully. Do not stop mid-sentence.
 """
-
-
-# ============================================================
 # Generic generation function
-# ============================================================
 
 def generate_from_prompt(
     user_content: str,
@@ -111,10 +101,8 @@ def generate_from_prompt(
 
     return answer.strip()
 
-
 # ============================================================
 # RT preprocessing
-# ============================================================
 
 EMAIL_RE = re.compile(
     r"\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}\b"
@@ -181,9 +169,7 @@ def anonymize_text(s: str) -> str:
     return s
 
 
-# ============================================================
 # Load RT ticket dataset
-# ============================================================
 
 print("\nLoading RT ticket dataset...")
 
@@ -230,9 +216,7 @@ print("Rows after cleaning:", len(df))
 if len(df) > 0:
     print(df.iloc[0]["body_clean"][:400])
 
-# ============================================================
 # Load embedding model
-# ============================================================
 
 print("\nLoading embedding model...")
 
@@ -241,9 +225,7 @@ embedder = SentenceTransformer(
 )
 
 
-# ============================================================
 # Create embeddings
-# ============================================================
 
 texts = (
     df["problem_text"]
@@ -262,9 +244,7 @@ embs = embedder.encode(
 ).astype(np.float32)
 
 
-# ============================================================
 # Build FAISS index
-# ============================================================
 
 index = faiss.IndexFlatIP(
     embs.shape[1]
@@ -278,9 +258,7 @@ print(
     "tickets."
 )
 
-# ============================================================
 # RT retrieval
-# ============================================================
 
 def retrieve_rt(
     query: str,
@@ -325,9 +303,7 @@ def retrieve_rt(
     return chunks
 
 
-# ============================================================
 # Build RAG prompt
-# ============================================================
 def build_rag_prompt(
     query: str,
     retrieved_chunks: list[str]
@@ -351,9 +327,7 @@ If the evidence is insufficient, say what information is missing.
     return prompt
 
 
-# ============================================================
 # RAG answer
-# ============================================================
 
 def answer_rag(question: str):
 
@@ -375,9 +349,7 @@ def answer_rag(question: str):
     return answer, retrieved_chunks
 
 
-# ============================================================
 # Interactive chatbot
-# ============================================================
 
 print(
     "\nMistral 7B + RT Ticket RAG is ready."
@@ -430,9 +402,7 @@ while True:
 
     print(rag_answer)
 
-    # ========================================================
     # Save QA log
-    # ========================================================
 
     with open(
         LOG_PATH,
