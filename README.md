@@ -144,8 +144,6 @@ The following methods were applied:
 - **Wilcoxon signed-rank test:** Evaluate planned paired comparisons between configurations.
 - **Holm correction:** Adjust for multiple statistical comparisons.
 - **Kendall's W:** Describe effect size for Friedman tests.
-- **Krippendorff's alpha:** Assess inter-rater agreement.
-
 Statistical significance was evaluated at α = 0.05.
 
 
