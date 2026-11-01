@@ -8,20 +8,17 @@ from pypdf import PdfReader
 from transformers import AutoTokenizer, AutoModelForCausalLM
 from sentence_transformers import SentenceTransformer
 
-
-# ============================================================
 # Configuration
-# ============================================================
 
 MODEL_NAME = "mistralai/Mistral-7B-Instruct-v0.3"
 
 RT_CSV_PATH = (
-    "/umbc/rs/pi_jianwu/users/tartelt1/CHIPRAG/"
+#    "/choose user appropriate path/"
     "allDoitTickets_CLEANED.csv"
 )
 
 WIKI_PDF_PATH = (
-    "/umbc/rs/pi_jianwu/users/tartelt1/CHIPRAG/"
+    "/choose user appropriate path/"
     "wiki_data.pdf"
 )
 
@@ -46,9 +43,7 @@ FALLBACK_MESSAGE = (
 )
 
 
-# ============================================================
 # GPU check
-# ============================================================
 
 print("CUDA available:", torch.cuda.is_available())
 
