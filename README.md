@@ -86,8 +86,7 @@ The second knowledge source consists of procedural HPC documentation describing 
 
 Wiki documentation was exported and converted into text for indexing and retrieval.
 
-**Data availability:** Institutional support tickets and internal documentation may contain sensitive or restricted information. Raw institutional data should not be publicly distributed without authorization.
-
+**Data availability:** Institutional support tickets and internal documentation may contain sensitive or restricted information. Thus, raw institutional data should not be publicly distributed.
 ## Experimental Environment
 
 Experiments were conducted on UMBC's chip HPC cluster using locally hosted language models.
