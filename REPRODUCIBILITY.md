@@ -114,7 +114,7 @@ Eight LLM configurations and human reference responses were evaluated using seve
 
 The evaluation involved five HPC experts, 40 completed survey submissions, and 6,982 valid criterion-level ratings.
 
-The statistical analysis included Friedman tests, Wilcoxon signed-rank tests with Holm adjustment, Kendall's W, and Krippendorff's alpha.
+The statistical analysis included Friedman tests, Wilcoxon signed-rank tests with Holm adjustment for multiple comparisons, and Kendall’s W (Kendall’s coefficient of concordance) is an effect-size measure. Response-quality ratings were summarized using mean, standard deviation (SD), and the number of valid ratings (N) for each system across the seven evaluation criteria.
 
 ### 8. Data Availability and Reproducibility Limitations
 
