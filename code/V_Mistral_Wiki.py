@@ -8,14 +8,13 @@ from transformers import AutoTokenizer, AutoModelForCausalLM
 from sentence_transformers import SentenceTransformer
 
 
-# ============================================================
+
 # Configuration
-# ============================================================
 
 MODEL_NAME = "mistralai/Mistral-7B-Instruct-v0.3"
 
 PDF_PATH = (
-    "/umbc/rs/pi_jianwu/users/tartelt1/CHIPRAG/"
+    "/user_path/"
     "wiki_data.pdf"
 )
 
@@ -27,10 +26,8 @@ MAX_NEW_TOKENS = 768
 
 LOG_PATH = "V1_mistral_wiki.txt"
 
-
-# ============================================================
 # GPU check
-# ============================================================
+
 
 print("CUDA available:", torch.cuda.is_available())
 
@@ -39,10 +36,7 @@ if torch.cuda.is_available():
 else:
     print("No GPU found. Model will run on CPU.")
 
-
-# ============================================================
 # Load Mistral model
-# ============================================================
 
 tokenizer = AutoTokenizer.from_pretrained(
     MODEL_NAME,
@@ -59,7 +53,6 @@ model = AutoModelForCausalLM.from_pretrained(
 
 model.eval()
 
-# ============================================================
 # System prompt
 # ============================================================
 
@@ -73,9 +66,7 @@ Explain each step clearly in 2-3 sentences.
 Always complete your response fully. Do not stop mid-sentence.
 """
 
-# ============================================================
 # Generation
-# ============================================================
 def generate_from_messages(
     messages: list[dict],
     max_new_tokens: int = MAX_NEW_TOKENS
@@ -100,9 +91,8 @@ def generate_from_messages(
     generated_tokens = out[0][inputs["input_ids"].shape[1]:]
     return tokenizer.decode(generated_tokens, skip_special_tokens=True).strip()
 
-# ============================================================
+
 # Text preprocessing
-# ============================================================
 
 def normalize_text(text: str) -> str:
 
@@ -128,9 +118,7 @@ def normalize_text(text: str) -> str:
     return text.strip()
 
 
-# ============================================================
 # Read Wiki PDF
-# ============================================================
 
 print("\nLoading Wiki PDF...")
 
@@ -169,9 +157,7 @@ print(
 )
 
 
-# ============================================================
 # Chunk PDF text
-# ============================================================
 
 def chunk_text(
     text: str,
@@ -240,10 +226,7 @@ if len(wiki_chunks) == 0:
 print("\nExample Wiki chunk:")
 print(wiki_chunks[0]["text"][:500])
 
-
-# ============================================================
 # Load embedding model
-# ============================================================
 
 print("\nLoading embedding model...")
 
@@ -251,10 +234,7 @@ embedder = SentenceTransformer(
     "sentence-transformers/all-MiniLM-L6-v2"
 )
 
-
-# ============================================================
 # Create embeddings
-# ============================================================
 
 texts = [
     item["text"]
@@ -274,10 +254,7 @@ embeddings = embedder.encode(
     normalize_embeddings=True
 ).astype(np.float32)
 
-
-# ============================================================
 # Build FAISS index
-# ============================================================
 
 index = faiss.IndexFlatIP(
     embeddings.shape[1]
@@ -292,10 +269,7 @@ print(
     "Wiki chunks."
 )
 
-
-# ============================================================
 # Retrieve Wiki chunks
-# ============================================================
 
 def retrieve_wiki(
     query: str,
@@ -340,10 +314,7 @@ def retrieve_wiki(
 
     return retrieved_chunks
 
-
-# ============================================================
 # Build Wiki RAG prompt
-# ============================================================
 
 def build_rag_prompt(
     query: str,
@@ -379,9 +350,7 @@ def build_rag_prompt(
     ]
 
 
-# ============================================================
 # Wiki RAG answer
-# ============================================================
 
 def answer_rag(question: str):
 
@@ -402,10 +371,7 @@ def answer_rag(question: str):
 
     return answer, retrieved_chunks
 
-
-# ============================================================
 # Interactive chatbot
-# ============================================================
 
 print(
     "\nMistral 7B + Wiki PDF RAG is ready."
@@ -456,10 +422,7 @@ while True:
 
     print(wiki_answer)
 
-
-    # ========================================================
     # Show retrieved Wiki evidence
-    # ========================================================
 
     print(
         "\n--- Retrieved Wiki Chunks ---"
@@ -483,10 +446,7 @@ while True:
             item["text"]
         )
 
-
-    # ========================================================
     # Save log
-    # ========================================================
 
     with open(
         LOG_PATH,
