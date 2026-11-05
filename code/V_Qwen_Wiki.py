@@ -9,16 +9,13 @@ from sentence_transformers import SentenceTransformer
 from transformers import AutoModelForCausalLM, AutoTokenizer
 
 
-# ============================================================
 # Configuration
-
-
 MODEL_NAME = "Qwen/Qwen2.5-3B-Instruct"
 EMBEDDING_MODEL_NAME = "sentence-transformers/all-MiniLM-L6-v2"
 
 # IMPORTANT: Change this filename to the exact wiki PDF.
 PDF_PATH = Path(
-    "/umbc/rs/pi_jianwu/users/tartelt1/CHIPRAG/wiki_data.pdf"
+    "user_path"
 )
 
 TOP_K = 3
@@ -28,10 +25,7 @@ MAX_INPUT_TOKENS = 4096
 MAX_NEW_TOKENS = 768
 LOG_PATH = "Qwen_wiki_v1.txt"
 
-
-# ============================================================
 # GPU and model loading
-
 
 print("CUDA available:", torch.cuda.is_available())
 if torch.cuda.is_available():
@@ -54,8 +48,8 @@ model = AutoModelForCausalLM.from_pretrained(
     torch_dtype=DTYPE,
     trust_remote_code=True,
 )
-model.eval()    # ← ADD THIS
-#=============================================================
+model.eval() 
+
 #System promt
 #=============================================================
 SYSTEM = """You are a support assistant for the UMBC chip HPC cluster.
@@ -99,10 +93,7 @@ def anonymize_text(text: str) -> str:
     text = re.sub(r"(/users/)[^/\s]+", r"\1[USER]", text)
     return text
 
-
-# ============================================================
 # Wiki PDF extraction and chunking
-
 
 def extract_pdf_pages(pdf_path: Path) -> list[dict]:
     if not pdf_path.exists():
@@ -203,10 +194,7 @@ print(
 print(wiki_chunks[0]["text"][:1000])
 print("-" * 80)
 
-
-# ============================================================
 # Embeddings and FAISS index
-# ============================================================
 
 print("\nLoading embedding model...")
 embedding_model = SentenceTransformer(EMBEDDING_MODEL_NAME)
@@ -224,10 +212,7 @@ wiki_index.add(wiki_embeddings)
 
 print(f"FAISS index contains {wiki_index.ntotal} Wiki chunks.")
 
-
-# ============================================================
 # Retrieval and generation
-# ============================================================
 
 def retrieve_wiki(question: str, top_k: int = TOP_K) -> list[dict]:
     question = normalize_text(question)
@@ -340,10 +325,7 @@ def answer_wiki_rag(
     answer = generate_from_messages(messages, max_new_tokens=max_new_tokens)
     return answer, retrieved
 
-
-# ============================================================
 # Interactive Wiki RAG chatbot
-# ============================================================
 
 print("\nQwen 2.5 3B + Wiki PDF RAG is ready.")
 print("Type chip/HPC question. Type 'exit' to quit.")
