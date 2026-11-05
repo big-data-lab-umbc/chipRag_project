@@ -11,10 +11,9 @@ from transformers import AutoTokenizer, AutoModelForCausalLM
 from sentence_transformers import SentenceTransformer
 
 # Config
-# ============================================================
 MODEL_NAME  = "Qwen/Qwen2.5-3B-Instruct"
 EMBED_NAME  = "sentence-transformers/all-MiniLM-L6-v2"
-RT_CSV_PATH = "/umbc/rs/pi_jianwu/users/tartelt1/CHIPRAG/allDoitTickets_CLEANED.csv"
+RT_CSV_PATH = "/user_Path/allDoitTickets_CLEANED.csv"
 CACHE_DIR   = "rag_cache"
 LOG_FILE    = "Qwen_rt_v1.txt"
 
@@ -25,9 +24,8 @@ TOP_K = 3
 MAX_NEW_TOKENS = 768
 CHUNK_CHARS = 1500
 
-# ============================================================
 # GPU check
-# ============================================================
+
 print("CUDA available:", torch.cuda.is_available())
 if torch.cuda.is_available():
     print("GPU name:", torch.cuda.get_device_name(0))
@@ -38,9 +36,7 @@ else:
     DEVICE = "cpu"
     DTYPE  = torch.float32
 
-# ============================================================
 # LLM
-# ============================================================
 tokenizer = AutoTokenizer.from_pretrained(MODEL_NAME)
 model = AutoModelForCausalLM.from_pretrained(
     MODEL_NAME,
@@ -49,7 +45,6 @@ model = AutoModelForCausalLM.from_pretrained(
 )
 model.eval()
 
-#==============================================================
 #Sytem promt
 #==============================================================
 
@@ -88,8 +83,6 @@ def answer_llm(user_content: str, max_new_tokens: int = MAX_NEW_TOKENS) -> str:
     generated = out[0][inputs["input_ids"].shape[-1]:]   # slice TOKENS, not chars
     return tokenizer.decode(generated, skip_special_tokens=True).strip()
 
-
-# ============================================================
 # RT preprocessing
 # ============================================================
 EMAIL_RE = re.compile(r"\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}\b")
@@ -135,9 +128,8 @@ df = df.drop_duplicates(subset="problem_text").reset_index(drop=True)
 #print("\nExample anonymized ticket:")
 #print(df.iloc[0]["body_clean"][:400])          # .iloc, not .loc[0]
 
-# ============================================================
+
 # FAISS retrieval (cached)
-# ============================================================
 os.makedirs(CACHE_DIR, exist_ok=True)
 INDEX_PATH = os.path.join(CACHE_DIR, "rt_tickets.faiss")
 META_PATH  = os.path.join(CACHE_DIR, "rt_tickets_meta.parquet")
@@ -227,10 +219,8 @@ def log_qa(question: str, answer: str, hits: list[dict], elapsed: float) -> None
         f.write(f"Question:\n{question}\n\n")
         f.write(f"\nAnswer:\n{answer}\n")
 
-
-# ============================================================
 # Interactive chatbot
-# ============================================================
+
 print("\nQwen 2.5 3B + Ticket RAG is ready.")
 print("Type your chip/HPC question. Type 'exit' to quit.")
 
