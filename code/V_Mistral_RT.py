@@ -101,7 +101,6 @@ def generate_from_prompt(
 
     return answer.strip()
 
-# ============================================================
 # RT preprocessing
 
 EMAIL_RE = re.compile(
