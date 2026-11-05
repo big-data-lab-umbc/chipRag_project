@@ -9,19 +9,16 @@ from transformers import AutoTokenizer, AutoModelForCausalLM
 from sentence_transformers import SentenceTransformer
 
 
-# ============================================================
 # Configuration
-# ============================================================
 
 MODEL_NAME = "Qwen/Qwen2.5-3B-Instruct"
 
 RT_CSV_PATH = (
-    "/umbc/rs/pi_jianwu/users/tartelt1/CHIPRAG/"
-    "allDoitTickets_CLEANED.csv"
+    " user_path"
 )
 
 WIKI_PDF_PATH = (
-    "/umbc/rs/pi_jianwu/users/tartelt1/CHIPRAG/"
+    "user_path/"
     "wiki_data.pdf"
 )
 
@@ -45,9 +42,7 @@ FALLBACK_MESSAGE = (
     "Please submit a chip/HPC help ticket so the support team can assist you."
 )
 
-# ============================================================
 # GPU check
-# ============================================================
 
 print("CUDA available:", torch.cuda.is_available())
 
@@ -59,9 +54,8 @@ else:
     print("No GPU found. Model will run on CPU.")
     DEVICE = "cpu"       
     DTYPE  = torch.float32
-# ============================================================
+
 # Load Qwen
-# ============================================================
 
 print("\nLoading Qwen model...")
 
@@ -78,8 +72,6 @@ model = AutoModelForCausalLM.from_pretrained(
 )
 model.eval()
 
-
-# ============================================================
 # System prompt
 # ============================================================
 SYSTEM = """You are a support assistant for the UMBC chip HPC cluster.
@@ -92,9 +84,7 @@ Explain each step clearly in 2-3 sentences.
 Always complete your response fully. Do not stop mid-sentence.
 """
 
-# ============================================================
 # Text preprocessing
-# ============================================================
 
 EMAIL_RE = re.compile(
     r"\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}\b"
@@ -168,9 +158,8 @@ def anonymize_text(text: str) -> str:
     return text
 
 
-# ============================================================
+
 # Load RT tickets
-# ============================================================
 
 print("\nLoading RT tickets...")
 
@@ -207,9 +196,7 @@ df = df.drop_duplicates(
 print("RT tickets:", len(df))
 
 
-# ============================================================
 # Create combined corpus
-# ============================================================
 
 documents = []
 
@@ -237,9 +224,7 @@ for row_number, row in df.iterrows():
     )
 
 
-# ============================================================
 # Wiki PDF chunking
-# ============================================================
 
 def chunk_text(
     text: str,
@@ -268,9 +253,8 @@ def chunk_text(
     return chunks
 
 
-# ============================================================
+
 # Load Wiki PDF
-# ============================================================
 
 print("\nLoading Wiki PDF...")
 
@@ -334,9 +318,7 @@ if not documents:
     )
 
 
-# ============================================================
 # Embedding model
-# ============================================================
 
 print("\nLoading embedding model...")
 
@@ -344,9 +326,8 @@ embedder = SentenceTransformer(
     EMBEDDING_MODEL
 )
 
-# ============================================================
+
 # Create combined embeddings
-# ============================================================
 
 texts = [
     document["text"]
@@ -364,9 +345,8 @@ embeddings = embedder.encode(
     normalize_embeddings=True
 ).astype(np.float32)
 
-# ============================================================
+
 # Build FAISS index
-# ============================================================
 
 index = faiss.IndexFlatIP(
     embeddings.shape[1]
@@ -381,9 +361,8 @@ print(
     "combined chunks."
 )
 
-# ============================================================
+
 # Retrieve from RT + Wiki
-# ============================================================
 
 def retrieve_combined(
     query: str,
@@ -428,10 +407,7 @@ def retrieve_combined(
 
     return retrieved
 
-
-# ============================================================
 # Build combined RAG prompt
-# ============================================================
 
 def build_rag_user_prompt(
     question: str,
@@ -488,10 +464,7 @@ If these sources do not contain enough information to answer safely, output
 the fallback test.
 """
 
-
-# ============================================================
 # Qwen generation using chat template
-# ============================================================
 
 def generate_answer(
     user_prompt: str
@@ -540,10 +513,7 @@ def generate_answer(
 
     return answer.strip()
 
-
-# ============================================================
 # Complete RAG answer
-# ============================================================
 
 def answer_question(
     question: str
@@ -576,9 +546,7 @@ def answer_question(
     )
 
 
-# ============================================================
 # Interactive chatbot
-# ============================================================
 
 print(
     "\nQwen2.5-3B + RT + Wiki RAG is ready."
@@ -666,10 +634,7 @@ while True:
             item["text"][:500]
         )
 
-
-    # ========================================================
     # Log results
-    # ========================================================
 
     with open(
         LOG_PATH,
