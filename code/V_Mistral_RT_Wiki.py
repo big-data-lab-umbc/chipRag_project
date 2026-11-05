@@ -57,10 +57,7 @@ else:
         "No GPU found. Model will run on CPU."
     )
 
-
-# ============================================================
 # Load Mistral
-# ============================================================
 
 print("\nLoading Mistral model...")
 
@@ -83,8 +80,6 @@ model.generation_config.pad_token_id = tokenizer.eos_token_id
 
 model.eval()
 
-
-# ============================================================
 # System prompt
 # ============================================================
 
@@ -97,10 +92,8 @@ Provide a detailed answer with at least 5 numbered steps.
 Explain each step clearly in 2-3 sentences.
 Always complete your response fully. Do not stop mid-sentence.
 """
-# ============================================================
-# Text preprocessing
-# ============================================================
 
+# Text preprocessing
 EMAIL_RE = re.compile(
     r"\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}\b"
 )
@@ -172,10 +165,7 @@ def anonymize_text(text: str) -> str:
 
     return text
 
-
-# ============================================================
 # Load RT tickets
-# ============================================================
 
 print("\nLoading RT tickets...")
 
@@ -219,10 +209,7 @@ print(
     len(df)
 )
 
-
-# ============================================================
 # Combined corpus
-# ============================================================
 
 documents = []
 
@@ -246,10 +233,7 @@ for row_number, row in df.iterrows():
         }
     )
 
-
-# ============================================================
 # Wiki chunk function
-# ============================================================
 
 def chunk_text(
     text: str,
@@ -278,9 +262,7 @@ def chunk_text(
     return chunks
 
 
-# ============================================================
 # Load Wiki PDF
-# ============================================================
 
 print("\nLoading Wiki PDF...")
 
@@ -384,9 +366,7 @@ embedder = SentenceTransformer(
 )
 
 
-# ============================================================
 # Combined embeddings
-# ============================================================
 
 texts = [
     document["text"]
@@ -428,9 +408,8 @@ print(
 )
 
 
-# ============================================================
 # Combined retrieval
-# ============================================================
+
 
 def retrieve_combined(
     query: str,
@@ -477,9 +456,7 @@ def retrieve_combined(
 
     return retrieved
 
-# ============================================================
 # Build RAG user prompt
-# ============================================================
 
 def build_rag_user_prompt(
     question: str,
@@ -544,10 +521,7 @@ If these sources do not contain enough information to answer safely, output
 the required help-ticket message instead.
 """
 
-
-# ============================================================
 # Mistral generation
-# ============================================================
 
 def generate_answer(
     user_prompt: str
@@ -584,8 +558,8 @@ def generate_answer(
             **inputs,
             max_new_tokens=MAX_NEW_TOKENS,
             do_sample=False,
-            eos_token_id=tokenizer.eos_token_id,              # ← ADD
-            pad_token_id=tokenizer.pad_token_id               # ← ADD
+            eos_token_id=tokenizer.eos_token_id,            
+            pad_token_id=tokenizer.pad_token_id             
         )
 
 
@@ -601,10 +575,7 @@ def generate_answer(
 
     return answer.strip()
 
-
-# ============================================================
 # Complete answer
-# ============================================================
 
 def answer_question(
     question: str
@@ -616,7 +587,6 @@ def answer_question(
     )
 
     # Build prompt based on available retrieved evidence
-    # --------------------------------------------------------
 
     if not retrieved:
         return (
@@ -637,9 +607,8 @@ def answer_question(
         retrieved,
         True
     )
-# ============================================================
+
 # Interactive chatbot
-# ============================================================
 
 print(
     "\nMistral-7B + RT + Wiki RAG is ready."
@@ -732,10 +701,7 @@ while True:
             item["text"][:500]
         )
 
-
-    # ========================================================
     # Log results
-    # ========================================================
 
     with open(
         LOG_PATH,
